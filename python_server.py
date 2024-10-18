@@ -4,25 +4,41 @@ import socket
 
 def start_server():
 
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # What does this do?
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    # Get the hostname
     host = socket.gethostname()
-    port = 12345
+    port = 12345 # Initialize port number, must be higher than 1024
 
-    server_socket.bind((host, port))
+    # What does this do?
+    server.bind((host, port))
 
-    server_socket.listen(5)
+    # What does this do?
+    server.listen(2)
 
     print(f"server started on {host}:{port}. Waiting for connection...")
 
-    client_socket, addr = server_socket.accept()
+    client, addr = server.accept() # Accept new connection
 
-    print(f"Got a connection from {addr}")
+    print(f"Connection from {addr}")
 
-    data = client_socket.recv(1024).decode('utf-8')
-    print(f"Received from client: {data}")
+    while True:
+        
+        # Receive data stream, exclude packets greater than 1024 bytes
+        data = client.recv(1024).decode() # What does utf-8 mean?
 
-    client_socket.close()
+        if not data:
+
+            # If data is not received then break
+            break
+    
+        print(f"Received from client: {data}")
+        data = input(' -> ')
+        client(data.encode()) # Send data to client
+
+    # Close the connection once operation is finished
+    client.close()
     print("Connection closed.")
 
 if __name__ == '__main__':

@@ -4,20 +4,28 @@ import socket
 
 def start_client():
 
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # What does this do?
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    # Get host name, configured to run on same PC as host
     host = socket.gethostname()
-    port = 12345
+    port = 12345 # Initialize port number, must be higher than 1024
 
-    client_socket.connect((host, port))
+    # Initiate connection
+    client.connect((host, port))
 
-    message = "Hella from the client!"
-    client_socket.send(message.encode('utf-8'))
+    message = input(" -> ") # Message input
 
-    response = client_socket.recv(1024).decode('utf-8')
-    print(f"Received from server: {response}")
+    while message.lower().strip() != 'bye':
+        client.send(message.encode()) # Send message
+        response = client.recv(1024).decode() # Receive message
+        print(f"Received from server: {response}")
 
-    client_socket.close()
+        # Recursive input
+        message = input(" -> ")
+
+    # Close the connection
+    client.close()
 
 if __name__ == '__main__':
     start_client()
