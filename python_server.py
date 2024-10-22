@@ -3,43 +3,37 @@
 import socket
 
 def start_server():
+    try:
+        # Create a socket object using IPv4 and TCP
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # What does this do?
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # Bind the socket to all network interfaces on port 12345
+        host = '0.0.0.0'
+        port = 12345
 
-    # Get the hostname
-    host = socket.gethostname()
-    port = 12345 # Initialize port number, must be higher than 1024
+        # Bind and listen for incoming connections
+        server.bind((host, port))
+        server.listen(2)
 
-    # What does this do?
-    server.bind((host, port))
+        print(f"Server started on {host}:{port}. Waiting for connections...")
 
-    # What does this do?
-    server.listen(2)
+        # Accept connections
+        client, addr = server.accept()
+        print(f"Connection from {addr}")
 
-    print(f"server started on {host}:{port}. Waiting for connection...")
+        while True:
+            data = client.recv(1024).decode()
+            if not data:
+                break
+            print(f"Received from client: {data}")
+            data = input(' -> ')
+            client.send(data.encode())
 
-    client, addr = server.accept() # Accept new connection
-
-    print(f"Connection from {addr}")
-
-    while True:
-        
-        # Receive data stream, exclude packets greater than 1024 bytes
-        data = client.recv(1024).decode() # What does utf-8 mean?
-
-        if not data:
-
-            # If data is not received then break
-            break
-    
-        print(f"Received from client: {data}")
-        data = input(' -> ')
-        client(data.encode()) # Send data to client
-
-    # Close the connection once operation is finished
-    client.close()
-    print("Connection closed.")
+    except socket.error as e:
+        print(f"Socket error: {e}")
+    finally:
+        client.close()
+        server.close()
 
 if __name__ == '__main__':
     start_server()
